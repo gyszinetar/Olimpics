@@ -30,28 +30,27 @@ class OlimpicGamesRepository(var context: Context) {
         var allCity=daoCity!!.fetchAllCity()
         var allCountry=daoCountry!!.fetchAllCountry()
         var list= mutableListOf<MarkerInfo>()
-
+        val sstring = StringBuilder()
         allCity.forEach {   city ->
-            var years=daoGame!!.getYearsForCity(city.id)
-            var countries = allCountry.filter {
-                it.id==city.country_id
-            }
+                var years=daoGame!!.getYearsForCity(city.id)
+                var countries = allCountry.filter {
+                    it.id==city.country_id
+                }
 
 
+            sstring.append("City: ")
+            sstring.append(city.name)
+            sstring.append(" Country:")
+            sstring.append(countries[0].name)
+            sstring.append(" Year(s):")
 
-            var sstring : String =city.name.plus(" Country:").plus(countries[0].name).plus(" years:")
-            years.forEach{
-                sstring=sstring.plus(it.toString()).plus(", ")
-            }
+                years.forEach{
+                    sstring.append(it.toString())
+                    sstring.append(", ")
+                }
 
-            list.add(MarkerInfo(LatLng(city.latitude,city.longitude),sstring))
-
-
-
+                list.add(MarkerInfo(LatLng(city.latitude,city.longitude),sstring.toString().dropLast(2)))
         }
-
-
         return list
-
     }
 }
