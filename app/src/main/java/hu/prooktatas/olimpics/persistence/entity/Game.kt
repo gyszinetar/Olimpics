@@ -4,13 +4,12 @@ import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 @Entity(tableName = "games")
-class Game() {
+class Game(val city_id: Long, val year: Int) {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    var id: Int = 0
-    var city_id : Int = 0
-    var year : Int = 0
+    var id: Long = 0
+
 
 
 }

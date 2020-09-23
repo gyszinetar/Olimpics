@@ -10,12 +10,12 @@ import hu.prooktatas.olimpics.persistence.entity.City
 interface CityDao{
 
     @Query("select * from cities where id=:refId")
-    fun fetchCity(refId:Int): City
+    fun fetchCity(refId:Long): City
 
 
     @Query("select * from cities")
     fun fetchAllCity(): List<City>
 
     @Insert
-    fun insertAlbum(city: City)
+    fun insertAlbum(city: City) :Long
 }

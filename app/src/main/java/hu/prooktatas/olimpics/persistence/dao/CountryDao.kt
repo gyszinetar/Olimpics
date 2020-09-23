@@ -9,11 +9,11 @@ import hu.prooktatas.olimpics.persistence.entity.Country
 @Dao
 interface CountryDao{
     @Query("select * from countries where id=:refId")
-    fun fetchCountry(refId:Int): Country
+    fun fetchCountry(refId:Long): Country
 
     @Query("select * from countries")
     fun fetchAllCountry(): List<Country>
 
     @Insert
-    fun insertAlbum(country: Country)
+    fun insertAlbum(country: Country) :Long
 }

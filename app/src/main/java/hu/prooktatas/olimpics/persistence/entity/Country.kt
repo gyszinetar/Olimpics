@@ -4,12 +4,12 @@ import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 @Entity(tableName = "countries")
-class Country() {
+class Country(val name:String) {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    var id: Int = 0
-    var name : String = ""
+    var id: Long = 0
+
 
 
 }

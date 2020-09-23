@@ -9,21 +9,17 @@ import hu.prooktatas.olimpics.persistence.entity.Game
 @Dao
 interface GameDao{
     @Query("select * from games where city_id=:id")
-    fun fetchAllGameByCityId(id:Int): List<Game>
-
-    @Query("select city_id from games order by city_id desc limit 1")
-    fun fetchHighestCityId(): Int
-
+    fun fetchAllGameByCityId(id:Long): List<Game>
 
 
     @Query("select * from games")
     fun fetchAllGame(): List<Game>
 
     @Query("select year from games where city_id=:id")
-    fun getYearsForCity(id:Int): List<Int>
+    fun getYearsForCity(id:Long): List<Int>
 
     @Insert
-    fun insertAlbum(game: Game)
+    fun insertAlbum(game: Game) :Long
 
 
 }
