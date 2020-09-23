@@ -56,7 +56,7 @@ class OlimpicGamesRepository(var context: Context) {
         return list
     }
 
-    fun nearestCity(pos1:LatLng): City?{
+    fun cityCloseToLocation(pos1:LatLng): City?{
         val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
         var allCity=daoCity!!.fetchAllCity()
         allCity.forEach {
