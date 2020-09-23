@@ -1,10 +1,12 @@
 package hu.prooktatas.olimpics.persistence.repository
 
 import android.content.Context
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import hu.prooktatas.olimpics.model.GameInfo
 import hu.prooktatas.olimpics.model.MarkerInfo
 import hu.prooktatas.olimpics.persistence.OlimpicsDatabase
+import hu.prooktatas.olimpics.persistence.entity.City
 
 class OlimpicGamesRepository(var context: Context) {
     private val database = OlimpicsDatabase.getDatabase(context)
@@ -52,5 +54,19 @@ class OlimpicGamesRepository(var context: Context) {
                 list.add(MarkerInfo(LatLng(city.latitude,city.longitude),sstring.toString().dropLast(2)))
         }
         return list
+    }
+
+    fun nearestCity(pos1:LatLng): City?{
+        val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
+        var allCity=daoCity!!.fetchAllCity()
+        allCity.forEach {
+            var array= floatArrayOf(0f)
+            Location.distanceBetween(pos1.latitude,pos1.longitude,it.latitude,it.longitude,array)
+            var distance=array[0]/1000
+            if(distance<50){
+                return it
+            }
+        }
+        return null
     }
 }
