@@ -10,7 +10,12 @@ import hu.prooktatas.olimpics.R
 import hu.prooktatas.olimpics.TAG
 import hu.prooktatas.olimpics.model.GameInfo
 
-class GameListAdapter(val gameInfos: List<GameInfo>): RecyclerView.Adapter<GameInfoViewHolder>(){
+interface GameItemClickHandler {
+    fun itemClicked()
+}
+
+class GameListAdapter(val gameInfos: List<GameInfo>,  val clickHandler: GameItemClickHandler): RecyclerView.Adapter<GameInfoViewHolder>(),
+    View.OnClickListener {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameInfoViewHolder {
         val rootView = LayoutInflater.from(parent.context).inflate(R.layout.gameinfo_item_row, parent, false)
         return GameInfoViewHolder(rootView)
@@ -27,6 +32,12 @@ class GameListAdapter(val gameInfos: List<GameInfo>): RecyclerView.Adapter<GameI
         holder.textViewCity.text = gi.city
         holder.textViewCountry.text = gi.country
         holder.textViewYear.text = gi.year.toString()
+
+        holder.itemView.setOnClickListener(this)
+    }
+
+    override fun onClick(p0: View?) {
+        clickHandler.itemClicked()
     }
 
 }
