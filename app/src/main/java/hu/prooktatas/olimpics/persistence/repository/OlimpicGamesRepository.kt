@@ -56,15 +56,18 @@ class OlimpicGamesRepository(var context: Context) {
         return list
     }
 
-    fun cityCloseToLocation(pos1:LatLng): City?{
+    fun cityCloseToLocation(pos1:LatLng): Pair<String,String>?{
         val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
+        val daoCountry = OlimpicsDatabase.getDatabase(context)?.countryDao()
         var allCity=daoCity!!.fetchAllCity()
         allCity.forEach {
             var array= floatArrayOf(0f)
             Location.distanceBetween(pos1.latitude,pos1.longitude,it.latitude,it.longitude,array)
             var distance=array[0]/1000
             if(distance<50){
-                return it
+                var city= it.name
+                var country=daoCountry!!.fetchCountry(it.country_id).name
+                return Pair(city,country)
             }
         }
         return null
