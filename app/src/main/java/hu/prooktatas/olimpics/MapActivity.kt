@@ -82,5 +82,3 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
     }
 
 }
-
-const val TAG = "OLY"
