@@ -27,7 +27,6 @@ class OlimpicGamesRepository(var context: Context) {
         val daoGame = OlimpicsDatabase.getDatabase(context)?.gameDao()
         val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
         val daoCountry = OlimpicsDatabase.getDatabase(context)?.countryDao()
-        var allGames=daoGame!!.fetchAllGame()
         var allCity=daoCity!!.fetchAllCity()
         var allCountry=daoCountry!!.fetchAllCountry()
         var list= mutableListOf<MarkerInfo>()
