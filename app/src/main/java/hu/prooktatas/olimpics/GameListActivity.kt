@@ -48,5 +48,4 @@ class GameListActivity : AppCompatActivity() {
 //TODO nagyobb betűk
 //TODO több jelenjen meg
 
-
-const val TAG = "KZs"
+const val TAG = "OLY"
