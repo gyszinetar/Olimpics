@@ -12,10 +12,14 @@ interface CityDao{
     @Query("select * from cities where id=:refId")
     fun fetchCity(refId:Long): City
 
+    @Query("select id from cities where name=:city")
+    fun selectCity(city:String): Long?
 
     @Query("select * from cities")
     fun fetchAllCity(): List<City>
 
+
+
     @Insert
-    fun insertAlbum(city: City) :Long
+    fun insertCity(city: City) :Long
 }

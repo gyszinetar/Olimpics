@@ -11,9 +11,13 @@ interface CountryDao{
     @Query("select * from countries where id=:refId")
     fun fetchCountry(refId:Long): Country
 
+
+    @Query("select id from countries where name=:country")
+    fun selectCountry(country:String): Long?
+
     @Query("select * from countries")
     fun fetchAllCountry(): List<Country>
 
     @Insert
-    fun insertAlbum(country: Country) :Long
+    fun insertCountry(country: Country) :Long
 }

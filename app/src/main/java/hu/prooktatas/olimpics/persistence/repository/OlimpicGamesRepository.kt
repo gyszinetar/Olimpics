@@ -6,6 +6,8 @@ import com.google.android.gms.maps.model.LatLng
 import hu.prooktatas.olimpics.model.*
 import hu.prooktatas.olimpics.persistence.OlimpicsDatabase
 import hu.prooktatas.olimpics.persistence.entity.City
+import hu.prooktatas.olimpics.persistence.entity.Country
+import hu.prooktatas.olimpics.persistence.entity.Game
 
 class OlimpicGamesRepository(var context: Context) {
 
@@ -42,6 +44,20 @@ class OlimpicGamesRepository(var context: Context) {
         return list
     }
 
+    fun buildMarkerInfoForOneCity(city:City):MarkerInfo{
+
+
+
+
+
+            var years=daoGame!!.getYearsForCity(city.id)
+            val yearslist=years.joinToString(", ")
+            val cityname=city.name
+            val markerInfo:MarkerInfo=MarkerInfo(LatLng(city.latitude,city.longitude),cityname+" "+yearslist)
+
+        return markerInfo
+    }
+
     fun cityCloseToLocation(pos1:LatLng): Pair<String,String>?{
 
         var allCity=daoCity!!.fetchAllCity()
@@ -60,7 +76,28 @@ class OlimpicGamesRepository(var context: Context) {
 
 
     fun processGameRequest(req:AddGameRequest):AddGameResonse{
+        val checkyear=daoGame!!.checkYear(req.year)
+        val checkcountry = daoCountry!!.selectCountry(req.country)
+        val checkcity = daoCity!!.selectCity(req.city)
+        var countryid:Long=0
+        var cityid:Long=0
+        if(checkyear==null) {
+            if(checkcountry==null){
+               countryid=daoCountry!!.insertCountry(Country(req.country))
+            }else{ countryid=checkcountry!!
+            }
+            if(checkcity==null){
+                cityid=daoCity!!.insertCity(City(req.city,req.latitude,req.longitude,countryid))
+                daoGame!!.insertGame(Game(cityid,req.year))
+                return AddGameResonse(AddGameResult.SUCCESS_NEW_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
+            }else{
+                cityid=checkcity!!
+                daoGame!!.insertGame(Game(cityid,req.year))
+                return AddGameResonse(AddGameResult.SUCCESS_EXISTING_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
+            }
 
+
+        }
         return AddGameResonse(AddGameResult.ERROR_INVALID_YEAR,null)
     }
 }
