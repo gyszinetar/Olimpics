@@ -34,17 +34,14 @@ class OlimpicGamesRepository(var context: Context) {
         var list= mutableListOf<MarkerInfo>()
         val sstring = StringBuilder()
         allCity.forEach {   city ->
+                sstring.clear()
                 var years=daoGame!!.getYearsForCity(city.id)
                 var countries = allCountry.filter {
                     it.id==city.country_id
                 }
-            sstring.append("City: ")
             sstring.append(city.name)
-            sstring.append(" Country:")
-            sstring.append(countries[0].name)
-            sstring.append(" Year(s):")
 
-                years.forEach{
+                    years.forEach{
                     sstring.append(it.toString())
                     sstring.append(", ")
                 }
