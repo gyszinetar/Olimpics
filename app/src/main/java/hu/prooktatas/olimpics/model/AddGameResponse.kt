@@ -1,8 +1,8 @@
 package hu.prooktatas.olimpics.model
 
 class AddGameResponse(
-    result:AddGameResult,
-    info:MarkerInfo?
+    val result:AddGameResult,
+    val info:MarkerInfo?
 )
 
 
