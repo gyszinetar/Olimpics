@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import hu.prooktatas.olimpics.gamelistadapter.GameItemClickHandler
 import hu.prooktatas.olimpics.gamelistadapter.GameListAdapter
 import hu.prooktatas.olimpics.model.GameInfo
+import hu.prooktatas.olimpics.persistence.repository.OlimpicGamesRepository
 
 class GameListActivity : AppCompatActivity(), GameItemClickHandler {
     private lateinit var recyclerView: RecyclerView
@@ -36,14 +37,29 @@ class GameListActivity : AppCompatActivity(), GameItemClickHandler {
         )
     )
 
+    private  fun loadItems(){
+        Thread{
+            val ogr = OlimpicGamesRepository(this)
+            val list = ogr.buildGames()
+            runOnUiThread {
+                recyclerView.adapter = GameListAdapter(list,this)
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }.start()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_list)
         recyclerView = findViewById(R.id.recycleView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = GameListAdapter(allGames,this)
+        recyclerView.adapter = GameListAdapter(emptyList(),this)
 
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadItems()
     }
 
     override fun itemClicked() {
