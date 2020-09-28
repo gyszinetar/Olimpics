@@ -9,12 +9,14 @@ import hu.prooktatas.olimpics.persistence.OlimpicsDatabase
 import hu.prooktatas.olimpics.persistence.entity.City
 
 class OlimpicGamesRepository(var context: Context) {
-    private val database = OlimpicsDatabase.getDatabase(context)
+
+    private val daoGame = OlimpicsDatabase.getDatabase(context)?.gameDao()
+    private val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
+    private val daoCountry = OlimpicsDatabase.getDatabase(context)?.countryDao()
 
     fun buildGames():List<GameInfo>{
-        val daoGame = OlimpicsDatabase.getDatabase(context)?.gameDao()
-        val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
-        val daoCountry = OlimpicsDatabase.getDatabase(context)?.countryDao()
+
+
         var list= mutableListOf<GameInfo>()
         var year = daoGame!!.fetchAllGame()
         year.forEach {
@@ -26,9 +28,7 @@ class OlimpicGamesRepository(var context: Context) {
     }
 
     fun buildMarkerInfo():List<MarkerInfo>{
-        val daoGame = OlimpicsDatabase.getDatabase(context)?.gameDao()
-        val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
-        val daoCountry = OlimpicsDatabase.getDatabase(context)?.countryDao()
+
         var allCity=daoCity!!.fetchAllCity()
         var allCountry=daoCountry!!.fetchAllCountry()
         var list= mutableListOf<MarkerInfo>()
@@ -38,8 +38,6 @@ class OlimpicGamesRepository(var context: Context) {
                 var countries = allCountry.filter {
                     it.id==city.country_id
                 }
-
-
             sstring.append("City: ")
             sstring.append(city.name)
             sstring.append(" Country:")
@@ -57,8 +55,7 @@ class OlimpicGamesRepository(var context: Context) {
     }
 
     fun cityCloseToLocation(pos1:LatLng): Pair<String,String>?{
-        val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
-        val daoCountry = OlimpicsDatabase.getDatabase(context)?.countryDao()
+
         var allCity=daoCity!!.fetchAllCity()
         allCity.forEach {
             var array= floatArrayOf(0f)
