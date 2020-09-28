@@ -11,11 +11,10 @@ import hu.prooktatas.olimpics.TAG
 import hu.prooktatas.olimpics.model.GameInfo
 
 interface GameItemClickHandler {
-    fun itemClicked()
+    fun itemClicked(gameInfo: GameInfo)
 }
 
-class GameListAdapter(val gameInfos: List<GameInfo>,  val clickHandler: GameItemClickHandler): RecyclerView.Adapter<GameInfoViewHolder>(),
-    View.OnClickListener {
+class GameListAdapter(val gameInfos: List<GameInfo>,  val clickHandler: GameItemClickHandler): RecyclerView.Adapter<GameInfoViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameInfoViewHolder {
         val rootView = LayoutInflater.from(parent.context).inflate(R.layout.gameinfo_item_row, parent, false)
         return GameInfoViewHolder(rootView)
@@ -28,22 +27,20 @@ class GameListAdapter(val gameInfos: List<GameInfo>,  val clickHandler: GameItem
     }
 
     override fun onBindViewHolder(holder: GameInfoViewHolder, position: Int) {
-        val gi = gameInfos[position]
-        holder.textViewCity.text = gi.city
-        holder.textViewCountry.text = gi.country
-        holder.textViewYear.text = gi.year.toString()
+        val currentGame = gameInfos[position]
+        holder.textViewCity.text = currentGame.city
+        holder.textViewCountry.text = currentGame.country
+        holder.textViewYear.text = currentGame.year.toString()
 
-        holder.itemView.setOnClickListener(this)
-    }
-
-    override fun onClick(p0: View?) {
-        clickHandler.itemClicked()
+        holder.itemView.setOnClickListener {
+            clickHandler.itemClicked(currentGame)
+        }
     }
 
 }
 
 class GameInfoViewHolder(v: View): RecyclerView.ViewHolder(v) {
-    val textViewCountry = v.findViewById<TextView>(R.id.textViewCountry)
-    val textViewCity = v.findViewById<TextView>(R.id.textViewCity)
-    val textViewYear = v.findViewById<TextView>(R.id.textViewYear)
+    val textViewCountry: TextView = v.findViewById(R.id.textViewCountry)
+    val textViewCity: TextView = v.findViewById(R.id.textViewCity)
+    val textViewYear: TextView = v.findViewById(R.id.textViewYear)
 }

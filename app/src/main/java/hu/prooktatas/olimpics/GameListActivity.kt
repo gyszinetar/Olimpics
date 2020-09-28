@@ -14,28 +14,28 @@ import hu.prooktatas.olimpics.persistence.repository.OlimpicGamesRepository
 class GameListActivity : AppCompatActivity(), GameItemClickHandler {
     private lateinit var recyclerView: RecyclerView
 
-    val allGames = listOf(
-        GameInfo(
-            "France",
-             "Paris",
-            1939
-        ),
-        GameInfo(
-            "Greece",
-            "Athen",
-            1896
-        ),
-        GameInfo(
-            "Belgium",
-            "Antwerpen",
-            1920
-        ),
-        GameInfo(
-            "Neatherland",
-            "Amsterdam",
-            1939
-        )
-    )
+//    val allGames = listOf(
+//        GameInfo(
+//            "France",
+//             "Paris",
+//            1939
+//        ),
+//        GameInfo(
+//            "Greece",
+//            "Athen",
+//            1896
+//        ),
+//        GameInfo(
+//            "Belgium",
+//            "Antwerpen",
+//            1920
+//        ),
+//        GameInfo(
+//            "Neatherland",
+//            "Amsterdam",
+//            1939
+//        )
+//    )
 
     private  fun loadItems(){
         Thread{
@@ -62,13 +62,11 @@ class GameListActivity : AppCompatActivity(), GameItemClickHandler {
         loadItems()
     }
 
-    override fun itemClicked() {
+    override fun itemClicked(gameInfo: GameInfo) {
         val intent = Intent(this, MapActivity::class.java)
+        intent.putExtra("selectedGame", gameInfo)
         startActivity(intent)
     }
 }
-
-//TODO nagyobb betűk
-//TODO több jelenjen meg
 
 const val TAG = "OLY"
