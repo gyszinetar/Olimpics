@@ -3,8 +3,7 @@ package hu.prooktatas.olimpics.persistence.repository
 import android.content.Context
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
-import hu.prooktatas.olimpics.model.GameInfo
-import hu.prooktatas.olimpics.model.MarkerInfo
+import hu.prooktatas.olimpics.model.*
 import hu.prooktatas.olimpics.persistence.OlimpicsDatabase
 import hu.prooktatas.olimpics.persistence.entity.City
 
@@ -57,5 +56,11 @@ class OlimpicGamesRepository(var context: Context) {
             }
         }
         return null
+    }
+
+
+    fun processGameRequest(req:AddGameRequest):AddGameResonse{
+
+        return AddGameResonse(AddGameResult.ERROR_INVALID_YEAR,null)
     }
 }
