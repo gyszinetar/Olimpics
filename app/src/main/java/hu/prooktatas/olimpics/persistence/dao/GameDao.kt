@@ -19,7 +19,7 @@ interface GameDao{
     fun getYearsForCity(id:Long): List<Int>
 
     @Query("select year from games where year=:year")
-    fun checkYear(year:Int): Int?
+    fun checkYear(year:Int): Long?
 
     @Insert
     fun insertGame(game: Game) :Long
