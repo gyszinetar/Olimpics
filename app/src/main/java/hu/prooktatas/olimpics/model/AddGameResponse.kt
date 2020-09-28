@@ -1,6 +1,6 @@
 package hu.prooktatas.olimpics.model
 
-class AddGameResonse(
+class AddGameResponse(
     result:AddGameResult,
     info:MarkerInfo?
 )

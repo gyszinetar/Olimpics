@@ -75,7 +75,7 @@ class OlimpicGamesRepository(var context: Context) {
     }
 
 
-    fun processGameRequest(req:AddGameRequest):AddGameResonse{
+    fun processGameRequest(req:AddGameRequest):AddGameResponse{
         val checkyear=daoGame!!.checkYear(req.year)
         val checkcountry = daoCountry!!.selectCountry(req.country)
         val checkcity = daoCity!!.selectCity(req.city)
@@ -89,15 +89,15 @@ class OlimpicGamesRepository(var context: Context) {
             if(checkcity==null){
                 cityid=daoCity!!.insertCity(City(req.city,req.latitude,req.longitude,countryid))
                 daoGame!!.insertGame(Game(cityid,req.year))
-                return AddGameResonse(AddGameResult.SUCCESS_NEW_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
+                return AddGameResponse(AddGameResult.SUCCESS_NEW_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
             }else{
                 cityid=checkcity!!
                 daoGame!!.insertGame(Game(cityid,req.year))
-                return AddGameResonse(AddGameResult.SUCCESS_EXISTING_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
+                return AddGameResponse(AddGameResult.SUCCESS_EXISTING_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
             }
 
 
         }
-        return AddGameResonse(AddGameResult.ERROR_INVALID_YEAR,null)
+        return AddGameResponse(AddGameResult.ERROR_INVALID_YEAR,null)
     }
 }
