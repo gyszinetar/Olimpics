@@ -32,7 +32,6 @@ class OlimpicGamesRepository(var context: Context) {
     fun buildMarkerInfo():List<MarkerInfo>{
 
         var allCity=daoCity!!.fetchAllCity()
-        var allCountry=daoCountry!!.fetchAllCountry()
         var list= mutableListOf<MarkerInfo>()
 
         allCity.forEach {   city ->
