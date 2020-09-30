@@ -14,6 +14,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import hu.prooktatas.olimpics.model.AddGameRequest
+import hu.prooktatas.olimpics.persistence.entity.Country
+import hu.prooktatas.olimpics.persistence.repository.OlimpicGamesRepository
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -31,6 +34,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         googleMap.setOnMapClickListener(this)
+        googleMap.uiSettings.isZoomControlsEnabled=true
 
         //displayTestData()
     }
@@ -53,11 +57,30 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
 //        val latitude = position?.latitude
 //        val longitude = position?.longitude
 
-        displayDialog(position!!)
+        checkCity(position!!)
 
     }
 
-    private fun displayDialog(pos: LatLng) {
+    private fun checkCity(pos:LatLng){
+        Thread{
+            var repo= OlimpicGamesRepository(this)
+            var cc=repo.cityCloseToLocation(pos)
+            var city:String?=null
+            var country:String?=null
+            if(cc!=null){
+            city=cc.first
+            country=cc.second}
+         runOnUiThread{
+             displayDialog(pos,city,country)
+
+
+         }
+        }.start()
+
+    }
+
+
+    private fun displayDialog(pos: LatLng,city:String?,country: String?) {
         val dialog = AlertDialog.Builder(this).create()
         dialog.setTitle("Add New Game")
 
@@ -69,16 +92,44 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
         val etCountry = rootView.findViewById<EditText>(R.id.etCountry)
         val etYear = rootView.findViewById<EditText>(R.id.etYear)
         val btnOk = rootView.findViewById<Button>(R.id.btnOk)
+        if(city!=null){
+            etCity.setText(city)
+            etCountry.setText(country)
+            etCity.isFocusable=false
+            etCountry.isFocusable=false
 
+        }
         tvLatitude.text = pos.latitude.toString()
         tvLongitude.text = pos.longitude.toString()
 
         btnOk.setOnClickListener {
-            dialog.dismiss()
+            val dataCity = etCity.text.toString()
+            val dataCountry= etCountry.text.toString()
+            val dataYear= etYear.text.toString()
+            val dataLatitude= tvLatitude.text.toString()
+            val dataLongitude= tvLongitude.text.toString()
+            if(dataCity.length>2 && dataCountry.length>2 && dataYear.toInt()>1800){
+
+                Log.d(TAG,dataCountry+" "+dataCity+" "+dataYear)
+                sendGameRequest(AddGameRequest(dataCountry,dataCity,dataYear.toInt(),dataLatitude.toDouble(),dataLongitude.toDouble()))
+                dialog.dismiss()
+            }
         }
 
         dialog.setView(rootView)
         dialog.show()
     }
+
+
+    private fun sendGameRequest(request: AddGameRequest){
+        Thread{
+            val repo = OlimpicGamesRepository(this)
+            repo.processGameRequest(request)
+            runOnUiThread{
+            }
+        }.start()
+
+    }
+
 
 }
