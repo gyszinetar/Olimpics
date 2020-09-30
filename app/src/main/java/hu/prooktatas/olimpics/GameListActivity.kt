@@ -41,8 +41,11 @@ class GameListActivity : AppCompatActivity(), GameItemClickHandler {
         Thread{
             val ogr = OlimpicGamesRepository(this)
             val list = ogr.buildGames()
+            val sortedList = list.sortedBy {
+                it.year
+            }
             runOnUiThread {
-                recyclerView.adapter = GameListAdapter(list,this)
+                recyclerView.adapter = GameListAdapter(sortedList,this)
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }.start()
