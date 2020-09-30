@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.maps.CameraUpdateFactory
 
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -36,8 +37,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
         googleMap.setOnMapClickListener(this)
         googleMap.uiSettings.isZoomControlsEnabled=true
 
+        zoomToSelected()
         //displayTestData()
     }
+
+    private fun zoomToSelected() {
+        intent.extras?.get("gps")?.let {
+            if (it is LatLng) {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 6F))
+            }
+        }
+     }
+
 
     fun displayTestData() {
         // Add initial markers
