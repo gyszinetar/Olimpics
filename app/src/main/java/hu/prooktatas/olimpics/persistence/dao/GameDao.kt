@@ -12,7 +12,7 @@ interface GameDao{
     fun fetchAllGameByCityId(id:Long): List<Game>
 
 
-    @Query("select * from games")
+    @Query("select * from games order by year")
     fun fetchAllGame(): List<Game>
 
     @Query("select year from games where city_id=:id")
