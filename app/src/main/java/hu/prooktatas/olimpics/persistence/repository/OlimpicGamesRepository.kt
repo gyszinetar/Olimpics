@@ -100,4 +100,13 @@ class OlimpicGamesRepository(var context: Context) {
         }
         return AddGameResponse(AddGameResult.ERROR_INVALID_YEAR,null)
     }
+
+    fun getCityPositionByYear(year: Int): LatLng? {
+        var city_id=daoGame!!.fetchCitybyYear(year)
+        if(city_id!=null){
+        var city=daoCity!!.fetchCity(city_id!!)
+        return LatLng(city.latitude,city.longitude)
+        }
+        return null
+    }
 }
