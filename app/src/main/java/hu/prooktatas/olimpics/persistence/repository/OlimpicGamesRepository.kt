@@ -81,7 +81,7 @@ class OlimpicGamesRepository(var context: Context) {
         val checkcity = daoCity!!.selectCity(req.city)
         var countryid:Long=0
         var cityid:Long=0
-        if(checkyear!=null) {
+        if(checkyear==null) {
             if(checkcountry==null){
                countryid=daoCountry!!.insertCountry(Country(req.country))
             }else{ countryid=checkcountry!!
