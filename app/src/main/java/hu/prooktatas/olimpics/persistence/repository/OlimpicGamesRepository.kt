@@ -39,7 +39,7 @@ class OlimpicGamesRepository(context: Context) {
                 val years=daoGame!!.getYearsForCity(city.id)
                 val yearsList=years.joinToString(", ")
                 val cityName=city.name
-                list.add(MarkerInfo(LatLng(city.latitude,city.longitude),cityName+" "+yearsList))
+                list.add(MarkerInfo(LatLng(city.latitude,city.longitude),cityName+": "+yearsList))
         }
         return list
     }
@@ -49,7 +49,7 @@ class OlimpicGamesRepository(context: Context) {
             val years=daoGame!!.getYearsForCity(city.id)
             val yearsList=years.joinToString(", ")
             val cityName=city.name
-            val markerInfo:MarkerInfo=MarkerInfo(LatLng(city.latitude,city.longitude),cityName+" "+yearsList)
+            val markerInfo:MarkerInfo=MarkerInfo(LatLng(city.latitude,city.longitude),cityName+": "+yearsList)
 
         return markerInfo
     }

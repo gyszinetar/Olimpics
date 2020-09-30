@@ -14,14 +14,18 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import hu.prooktatas.olimpics.model.AddGameRequest
+import hu.prooktatas.olimpics.model.AddGameResult
 import hu.prooktatas.olimpics.persistence.entity.Country
 import hu.prooktatas.olimpics.persistence.repository.OlimpicGamesRepository
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private lateinit var googleMap: GoogleMap
+
+    private val liveMarkers = mutableListOf<Marker>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +41,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
         googleMap.setOnMapClickListener(this)
         googleMap.uiSettings.isZoomControlsEnabled=true
 
+        buildAllMarkers()
         zoomToSelected()
         //displayTestData()
     }
@@ -65,8 +70,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
     override fun onMapClick(position: LatLng?) {
         Log.d(TAG, "mapclicked!!")
 
-//        val latitude = position?.latitude
-//        val longitude = position?.longitude
 
         checkCity(position!!)
 
@@ -83,11 +86,29 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
             country=cc.second}
          runOnUiThread{
              displayDialog(pos,city,country)
-
-
          }
         }.start()
 
+    }
+
+    private fun buildAllMarkers() {
+        val bgThread = Thread {
+            val repo = OlimpicGamesRepository(this)
+            val allMarkers = repo.buildMarkerInfo()
+            runOnUiThread {
+                googleMap.clear()
+
+                allMarkers.forEach {
+                    val aMarker = googleMap.addMarker(it.mo)
+                    aMarker.tag = it.markerTag
+                    liveMarkers.add(aMarker)
+
+
+                }
+            }
+        }
+
+        bgThread.start()
     }
 
 
@@ -103,13 +124,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
         val etCountry = rootView.findViewById<EditText>(R.id.etCountry)
         val etYear = rootView.findViewById<EditText>(R.id.etYear)
         val btnOk = rootView.findViewById<Button>(R.id.btnOk)
+
         if(city!=null){
             etCity.setText(city)
             etCountry.setText(country)
             etCity.isFocusable=false
             etCountry.isFocusable=false
-
         }
+
         tvLatitude.text = pos.latitude.toString()
         tvLongitude.text = pos.longitude.toString()
 
@@ -122,8 +144,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
             if(dataCity.length>2 && dataCountry.length>2 && dataYear.toInt()>1800){
 
                 Log.d(TAG,dataCountry+" "+dataCity+" "+dataYear)
-                sendGameRequest(AddGameRequest(dataCountry,dataCity,dataYear.toInt(),dataLatitude.toDouble(),dataLongitude.toDouble()))
-                dialog.dismiss()
+                persistNewGame(AddGameRequest(dataCountry,dataCity,dataYear.toInt(),dataLatitude.toDouble(),dataLongitude.toDouble()), dialog)
+//                dialog.dismiss()
             }
         }
 
@@ -131,16 +153,55 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClic
         dialog.show()
     }
 
+    private fun persistNewGame(request: AddGameRequest, d: AlertDialog) {
 
-    private fun sendGameRequest(request: AddGameRequest){
-        Thread{
+        val bgThread = Thread {
             val repo = OlimpicGamesRepository(this)
-            repo.processGameRequest(request)
-            runOnUiThread{
+            val addGameResponse = repo.processGameRequest(request)
+
+            runOnUiThread {
+                d.dismiss()
+
+                when(addGameResponse.result) {
+                    AddGameResult.ERROR_INVALID_YEAR -> {
+                        // do nothing, year input was invalid
+                        Log.d(TAG, "létező évszám!!!")
+                    }
+
+                    AddGameResult.SUCCESS_NEW_CITY -> {
+                        Log.d(TAG, "évszám jó, új város")
+                        val newMarker = googleMap.addMarker(addGameResponse.info!!.mo)
+                        newMarker.tag = addGameResponse.info!!.markerTag
+                        liveMarkers.add(newMarker)
+                    }
+
+                    AddGameResult.SUCCESS_EXISTING_CITY -> {
+                        Log.d(TAG, "évszám jó, létező város")
+                        liveMarkers.filter {
+                            it.tag == addGameResponse.info!!.markerTag
+                        }.first().also {
+                            it.title = addGameResponse.info!!.markerText
+                        }
+                    }
+                }
             }
-        }.start()
+        }
+
+        bgThread.start()
 
     }
+
+
+//    private fun sendGameRequest(request: AddGameRequest){
+//        Thread{
+//            val repo = OlimpicGamesRepository(this)
+//            val resposne = repo.processGameRequest(request)
+//            runOnUiThread{
+//
+//            }
+//        }.start()
+//
+//    }
 
 
 }
