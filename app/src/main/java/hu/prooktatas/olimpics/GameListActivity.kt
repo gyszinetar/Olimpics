@@ -65,10 +65,22 @@ class GameListActivity : AppCompatActivity(), GameItemClickHandler {
         loadItems()
     }
 
+    private fun getSelectedGamePosition(gameInfo: GameInfo){
+        Thread{
+            val ogr = OlimpicGamesRepository(this)
+            val gps = ogr.getCityPositionByYear(gameInfo.year)
+            runOnUiThread {
+                val intent = Intent(this, MapActivity::class.java)
+                gps?.let {
+                    intent.putExtra("gps", gps)
+                }
+                startActivity(intent)
+            }
+        }.start()
+    }
+
     override fun itemClicked(gameInfo: GameInfo) {
-        val intent = Intent(this, MapActivity::class.java)
-        intent.putExtra("selectedGame", gameInfo)
-        startActivity(intent)
+        getSelectedGamePosition(gameInfo)
     }
 }
 
