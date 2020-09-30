@@ -9,7 +9,7 @@ import hu.prooktatas.olimpics.persistence.entity.City
 import hu.prooktatas.olimpics.persistence.entity.Country
 import hu.prooktatas.olimpics.persistence.entity.Game
 
-class OlimpicGamesRepository(var context: Context) {
+class OlimpicGamesRepository(context: Context) {
 
     private val daoGame = OlimpicsDatabase.getDatabase(context)?.gameDao()
     private val daoCity = OlimpicsDatabase.getDatabase(context)?.cityDao()
@@ -20,11 +20,11 @@ class OlimpicGamesRepository(var context: Context) {
 
 
 
-        var list= mutableListOf<GameInfo>()
-        var year = daoGame!!.fetchAllGame()
+        val list= mutableListOf<GameInfo>()
+        val year = daoGame!!.fetchAllGame()
         year.forEach {
-            var city=daoCity!!.fetchCity(it.city_id)
-            var country=daoCountry!!.fetchCountry(city.country_id)
+            val city=daoCity!!.fetchCity(it.city_id)
+            val country=daoCountry!!.fetchCountry(city.country_id)
             list.add(GameInfo(country.name,city.name,it.year))
         }
         return list
@@ -32,42 +32,38 @@ class OlimpicGamesRepository(var context: Context) {
 
     fun buildMarkerInfo():List<MarkerInfo>{
 
-        var allCity=daoCity!!.fetchAllCity()
-        var list= mutableListOf<MarkerInfo>()
+        val allCity=daoCity!!.fetchAllCity()
+        val list= mutableListOf<MarkerInfo>()
 
         allCity.forEach {   city ->
-                var years=daoGame!!.getYearsForCity(city.id)
-                val yearslist=years.joinToString(", ")
-                val cityname=city.name
-                list.add(MarkerInfo(LatLng(city.latitude,city.longitude),cityname+" "+yearslist))
+                val years=daoGame!!.getYearsForCity(city.id)
+                val yearsList=years.joinToString(", ")
+                val cityName=city.name
+                list.add(MarkerInfo(LatLng(city.latitude,city.longitude),cityName+" "+yearsList))
         }
         return list
     }
 
     fun buildMarkerInfoForOneCity(city:City):MarkerInfo{
 
-
-
-
-
-            var years=daoGame!!.getYearsForCity(city.id)
-            val yearslist=years.joinToString(", ")
-            val cityname=city.name
-            val markerInfo:MarkerInfo=MarkerInfo(LatLng(city.latitude,city.longitude),cityname+" "+yearslist)
+            val years=daoGame!!.getYearsForCity(city.id)
+            val yearsList=years.joinToString(", ")
+            val cityName=city.name
+            val markerInfo:MarkerInfo=MarkerInfo(LatLng(city.latitude,city.longitude),cityName+" "+yearsList)
 
         return markerInfo
     }
 
     fun cityCloseToLocation(pos1:LatLng): Pair<String,String>?{
 
-        var allCity=daoCity!!.fetchAllCity()
+        val allCity=daoCity!!.fetchAllCity()
         allCity.forEach {
-            var array= floatArrayOf(0f)
+            val array= floatArrayOf(0f)
             Location.distanceBetween(pos1.latitude,pos1.longitude,it.latitude,it.longitude,array)
-            var distance=array[0]/1000
+            val distance=array[0]/1000
             if(distance<50){
-                var city= it.name
-                var country=daoCountry!!.fetchCountry(it.country_id).name
+                val city= it.name
+                val country=daoCountry!!.fetchCountry(it.country_id).name
                 return Pair(city,country)
             }
         }
@@ -76,24 +72,24 @@ class OlimpicGamesRepository(var context: Context) {
 
 
     fun processGameRequest(req:AddGameRequest):AddGameResponse{
-        val checkyear=daoGame!!.checkYear(req.year)
-        val checkcountry = daoCountry!!.selectCountry(req.country)
-        val checkcity = daoCity!!.selectCity(req.city)
-        var countryid:Long=0
-        var cityid:Long=0
-        if(checkyear==null) {
-            if(checkcountry==null){
-               countryid=daoCountry!!.insertCountry(Country(req.country))
-            }else{ countryid=checkcountry!!
+        val checkYear=daoGame!!.checkYear(req.year)
+        val checkCountry = daoCountry!!.selectCountry(req.country)
+        val checkCity = daoCity!!.selectCity(req.city)
+        var countryId:Long=0
+        var cityId:Long=0
+        if(checkYear==null) {
+            if(checkCountry==null){
+               countryId=daoCountry.insertCountry(Country(req.country))
+            }else{ countryId=checkCountry
             }
-            if(checkcity==null){
-                cityid=daoCity!!.insertCity(City(req.city,req.latitude,req.longitude,countryid))
-                daoGame!!.insertGame(Game(cityid,req.year))
-                return AddGameResponse(AddGameResult.SUCCESS_NEW_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
+            if(checkCity==null){
+                cityId=daoCity.insertCity(City(req.city,req.latitude,req.longitude,countryId))
+                daoGame.insertGame(Game(cityId,req.year))
+                return AddGameResponse(AddGameResult.SUCCESS_NEW_CITY,buildMarkerInfoForOneCity(daoCity.fetchCity(cityId)))
             }else{
-                cityid=checkcity!!
-                daoGame!!.insertGame(Game(cityid,req.year))
-                return AddGameResponse(AddGameResult.SUCCESS_EXISTING_CITY,buildMarkerInfoForOneCity(daoCity!!.fetchCity(cityid)))
+                cityId=checkCity
+                daoGame.insertGame(Game(cityId,req.year))
+                return AddGameResponse(AddGameResult.SUCCESS_EXISTING_CITY,buildMarkerInfoForOneCity(daoCity.fetchCity(cityId)))
             }
 
 
@@ -102,9 +98,9 @@ class OlimpicGamesRepository(var context: Context) {
     }
 
     fun getCityPositionByYear(year: Int): LatLng? {
-        var city_id=daoGame!!.fetchCitybyYear(year)
-        if(city_id!=null){
-        var city=daoCity!!.fetchCity(city_id!!)
+        val cityId=daoGame!!.fetchCitybyYear(year)
+        if(cityId!=null){
+        val city=daoCity!!.fetchCity(cityId)
         return LatLng(city.latitude,city.longitude)
         }
         return null
