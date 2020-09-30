@@ -21,6 +21,9 @@ interface GameDao{
     @Query("select year from games where year=:year")
     fun checkYear(year:Int): Int?
 
+    @Query("select city_id from games where year=:year")
+    fun fetchCitybyYear(year:Int): Long?
+
     @Insert
     fun insertGame(game: Game) :Long
 
